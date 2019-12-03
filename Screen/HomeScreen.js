@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View,FlatList } from 'react-native'
+import { Text, View,FlatList, ActivityIndicator,TextInput } from 'react-native'
 import Card from '../Component/Common/Card';
 import RecipeItem from '../Component/RecipeItem';
 
@@ -305,27 +305,81 @@ const DATA = [
 		image_url: 'http://static.food2fork.com/4515542dbb.jpg',
 		social_rank: 100.0,
 		publisher_url: 'http://allrecipes.com',
-	},
-];
+	}, 
+];  
+
+
 
 export default class HomeScreen extends Component {
     static navigationOptions = {
         title: "Recipe List",
-	  };
+      };
+
+      constructor(props) {
+          super(props);
+          this.state = {
+              loading: false,
+              data: null,
+              searchTerm:'',
+          }
+      }
+      
+      componentDidMount() {
+        this.setState({
+            loading: true,
+        })
+        fetch('https://www.food2fork.com/api/search?key=b8a8cac975085b642a79083fd8e83a56')
+        .then(response => response.json())
+        .then(responseJson => { 
+            // console.log(responseJson);
+            this.setState({
+                loading: false,
+                data: responseJson,
+            })
+        })
+    }
+
 	  renderRecipeItem = ({item,index}) => {
 		const {navigation} = this.props;
 		return <RecipeItem navigation={navigation} item={item}/>; 
-	  };
+      };
+      
+      searchFilter=(text)=> {
+
+      }
 
 
     render() { 
+        const {loading,data} = this.state;
+        if (loading) {
+            return (
+                <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
+                <ActivityIndicator size='large' color="#f9683a" />  
+                </View>
+            );
+        }
+
         return (
             <View style={{marginBottom:25}}>
+               
                 <FlatList
                 data={DATA}
                 renderItem={this.renderRecipeItem}
                 keyExtractor={(item,index)=> item.recipe_id}
 				contentContainerStyle={{marginTop:15}}
+                ListHeaderComponent={
+                    <View>
+                        <Text style={{paddingLeft:20,paddingBottom:10,fontSize:24,fontWeight:'bold'}}>Explore {data && data.count} Recipes</Text>
+                        <TextInput style={{borderWidth:1,borderColor:'#f9683a',height:40,marginBottom:20,marginHorizontal:20,paddingLeft:10,fontSize:14}}
+                            placeholder="Search Recipes"
+                            onChangeText={text=> {
+                                this.setState={
+                                    searchTerm:text,
+                                }
+                            }}
+                        />
+                    </View>
+                }
                     />
             </View>
         )
