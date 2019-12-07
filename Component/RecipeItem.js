@@ -14,7 +14,8 @@ export default class RecipeItem extends Component {
     render() {
         const {item} = this.props;
         return (
-            <View style={{marginHorizontal:16}}>
+            <TouchableOpacity onPress={this.goToDetails}>
+              <View style={{marginHorizontal:16}}>
                 <Card>
                     <Image style={{height:200,flex:1,borderTopLeftRadius:8,borderTopRightRadius:8}} 
                     resizeMode="cover" source={{uri: item.image_url}} />
@@ -23,7 +24,8 @@ export default class RecipeItem extends Component {
                     <Button onPressButton={this.goToDetails} title={"View Details"} />
              
                 </Card>
-            </View>
+              </View>
+            </TouchableOpacity>
         )
     }
 }
